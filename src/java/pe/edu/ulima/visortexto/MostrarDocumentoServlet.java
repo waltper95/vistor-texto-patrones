@@ -29,7 +29,7 @@ public class MostrarDocumentoServlet extends HttpServlet {
         String titulo = req.getParameter("titulo");
         String contenido = req.getParameter("contenido");
         String tipo = req.getParameter("tipo"); 
-        GestorRenderizado baos = new GestorRenderizado();
+        GestorRenderizado baos = GestorRenderizado.getInstance();
         baos.renderizar(titulo, contenido, tipo).writeTo(resp.getOutputStream());
         resp.getOutputStream().flush();
         
