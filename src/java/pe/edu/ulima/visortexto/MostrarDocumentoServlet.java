@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -27,45 +26,20 @@ public class MostrarDocumentoServlet extends HttpServlet {
     protected void doPost(
             HttpServletRequest req,
             HttpServletResponse resp) throws ServletException, IOException {
-
         String titulo = req.getParameter("titulo");
         String contenido = req.getParameter("contenido");
-        String tipo = req.getParameter("tipo");
-
+        String tipo = req.getParameter("tipo"); 
         if (tipo.equals("pdf")) {
-
-            Document document = new Document();
-            try {
-                PdfWriter.getInstance(document, new FileOutputStream("doc.pdf"));
-                Chunk chunk = new Chunk(titulo);
-                Chapter chapter = new Chapter(new Paragraph(chunk), 1);
-                chapter.setNumberDepth(0);
-                chapter.add(new Paragraph(contenido));
-                document.open();
-                document.add(chapter);
-                document.close();
-            } catch (DocumentException ex) {
-                Logger.getLogger(MostrarDocumentoServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-
-            resp.setContentType("application/pdf");
-            ByteArrayOutputStream baos = getByteArrayOutputStream("doc.pdf");
-
+            ModoVisualizacionAdapter adapter = new PDFAdapter();
+            ByteArrayOutputStream baos = adapter.renderizar(titulo, contenido);
             baos.writeTo(resp.getOutputStream());
+            resp.setContentType("application/pdf");
             resp.getOutputStream().flush();
         } else if (tipo.equals("html")) {
-            PrintWriter out = resp.getWriter();
-            out.print("<html>");
-            out.print("<head>");
-            out.print("<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css\"/>");
-            out.print("</head>");
-            out.print("<body class='container'>");
-            out.print("<h1>" + titulo + "</h1>");
-            out.print("<div class=\"panel panel-default\">");
-            out.print("<div class=\"panel-body\">" + contenido + "</div>");
-            out.print("</div?");
-            out.print("</body>");
-            out.print("</html>");
+            ModoVisualizacionAdapter adapter = new HTMLAdapter();
+            ByteArrayOutputStream baos = adapter.renderizar(titulo, contenido);
+            baos.writeTo(resp.getOutputStream());
+            resp.getOutputStream().flush();
         }
 
     }
