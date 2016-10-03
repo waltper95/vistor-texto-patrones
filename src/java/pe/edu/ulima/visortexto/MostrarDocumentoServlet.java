@@ -29,19 +29,15 @@ public class MostrarDocumentoServlet extends HttpServlet {
         String titulo = req.getParameter("titulo");
         String contenido = req.getParameter("contenido");
         String tipo = req.getParameter("tipo"); 
-        if (tipo.equals("pdf")) {
-            ModoVisualizacionAdapter adapter = new PDFAdapter();
-            ByteArrayOutputStream baos = adapter.renderizar(titulo, contenido);
-            baos.writeTo(resp.getOutputStream());
-            resp.setContentType("application/pdf");
-            resp.getOutputStream().flush();
-        } else if (tipo.equals("html")) {
-            ModoVisualizacionAdapter adapter = new HTMLAdapter();
-            ByteArrayOutputStream baos = adapter.renderizar(titulo, contenido);
-            baos.writeTo(resp.getOutputStream());
-            resp.getOutputStream().flush();
-        }
-
+        
+        ModoVisualizacionFactory factory = new ModoVisualizacionFactory();
+        ModoVisualizacionAdapter adapter = factory.obtenerAdapter(tipo);
+        
+        ByteArrayOutputStream baos = adapter.renderizar(titulo, contenido);
+        baos.writeTo(resp.getOutputStream());
+        resp.getOutputStream().flush();
+        
+        
     }
 
     private ByteArrayOutputStream getByteArrayOutputStream(String ruta) throws IOException {
