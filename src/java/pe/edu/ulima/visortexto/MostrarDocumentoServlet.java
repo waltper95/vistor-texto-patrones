@@ -29,12 +29,8 @@ public class MostrarDocumentoServlet extends HttpServlet {
         String titulo = req.getParameter("titulo");
         String contenido = req.getParameter("contenido");
         String tipo = req.getParameter("tipo"); 
-        
-        ModoVisualizacionFactory factory = new ModoVisualizacionFactory();
-        ModoVisualizacionAdapter adapter = factory.obtenerAdapter(tipo);
-        
-        ByteArrayOutputStream baos = adapter.renderizar(titulo, contenido);
-        baos.writeTo(resp.getOutputStream());
+        GestorRenderizado baos = new GestorRenderizado();
+        baos.renderizar(titulo, contenido, tipo).writeTo(resp.getOutputStream());
         resp.getOutputStream().flush();
         
         
